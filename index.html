@@ -3,663 +3,1071 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 QuantumAngles Design - Mission Control</title>
+    <title>QuantumAngles Design - Mission Control</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: #0a0a0f;
-            color: #00ff88;
+            color: #e0e0ff;
             font-family: 'Courier New', monospace;
             min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at top, #1a0a2e 0%, #0a0a0f 50%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(100, 0, 255, 0.03) 2px,
+                    rgba(100, 0, 255, 0.03) 4px
+                );
         }
 
         .header {
-            background: linear-gradient(135deg, #0d1117, #1a1a2e);
-            border-bottom: 2px solid #00ff88;
-            padding: 20px;
-            text-align: center;
+            background: linear-gradient(135deg, #1a0a2e, #0d1a2e);
+            border-bottom: 2px solid #6400ff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(100, 0, 255, 0.3);
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            color: #00ff88;
-            text-shadow: 0 0 20px #00ff88;
-            animation: pulse 2s infinite;
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(90deg, #6400ff, #00d4ff, #ff00aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            letter-spacing: 2px;
         }
 
-        .header p {
-            color: #888;
-            margin-top: 5px;
-            font-size: 0.9em;
+        .subtitle {
+            font-size: 0.75em;
+            color: #8888aa;
+            letter-spacing: 4px;
+            margin-top: 4px;
         }
 
-        @keyframes pulse {
-            0%, 100% { text-shadow: 0 0 20px #00ff88; }
-            50% { text-shadow: 0 0 40px #00ff88, 0 0 60px #00ff88; }
+        .system-time {
+            font-size: 0.85em;
+            color: #00d4ff;
+            text-align: right;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
 
-        .status-bar {
+        /* STATUS GRID */
+        .status-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .status-card {
-            background: #0d1117;
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            padding: 15px;
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            border: 1px solid #333366;
+            border-radius: 12px;
+            padding: 18px;
             text-align: center;
-        }
-
-        .status-card .label {
-            color: #888;
-            font-size: 0.8em;
-            margin-bottom: 5px;
-        }
-
-        .status-card .value {
-            color: #00ff88;
-            font-size: 1.4em;
-            font-weight: bold;
-        }
-
-        .status-card.active {
-            border-color: #00ff88;
-            box-shadow: 0 0 15px rgba(0,255,136,0.3);
-        }
-
-        .status-card.warning {
-            border-color: #ffaa00;
-        }
-
-        .status-card.warning .value {
-            color: #ffaa00;
-        }
-
-        .api-section {
-            background: #0d1117;
-            border: 1px solid #333;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .api-section h2 {
-            color: #00ff88;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .api-card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 20px;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .api-card:hover {
-            border-color: #00ff88;
-            box-shadow: 0 0 15px rgba(0,255,136,0.2);
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6400ff, transparent);
+            animation: scanline 3s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .status-card:hover {
+            border-color: #6400ff;
+            box-shadow: 0 0 20px rgba(100, 0, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        .api-card .service-name {
-            font-size: 1.1em;
+        .status-icon { font-size: 1.8em; margin-bottom: 8px; }
+        .status-name { font-size: 0.7em; color: #8888aa; letter-spacing: 2px; margin-bottom: 6px; }
+        .status-value { font-size: 0.8em; font-weight: bold; }
+        .status-online { color: #00ff88; }
+        .status-offline { color: #ff4444; }
+        .status-checking { color: #ffaa00; animation: pulse 1.5s infinite; }
+        .status-pending { color: #8888aa; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* SECTION PANELS */
+        .section-panel {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            border: 1px solid #333366;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #333366;
+            transition: background 0.3s;
+        }
+
+        .section-header:hover { background: rgba(100, 0, 255, 0.1); }
+
+        .section-title {
+            font-size: 1em;
             font-weight: bold;
-            color: #fff;
-            margin-bottom: 5px;
+            letter-spacing: 2px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .api-card .service-desc {
-            color: #666;
-            font-size: 0.8em;
-            margin-bottom: 15px;
-        }
+        .tiktok-color { color: #ff0050; }
+        .google-color { color: #4285f4; }
+        .facebook-color { color: #1877f2; }
+        .printify-color { color: #00d4ff; }
+        .etsy-color { color: #f56400; }
+        .telegram-color { color: #0088cc; }
+        .hermes-color { color: #6400ff; }
 
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        .input-group label {
-            display: block;
-            color: #888;
-            font-size: 0.75em;
-            margin-bottom: 5px;
-            text-transform: uppercase;
+        .section-badge {
+            font-size: 0.65em;
+            padding: 3px 10px;
+            border-radius: 20px;
             letter-spacing: 1px;
         }
 
-        .input-group input {
-            width: 100%;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            padding: 10px 12px;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            transition: border-color 0.3s;
-        }
+        .badge-set { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid #00ff88; }
+        .badge-unset { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid #ff4444; }
+        .badge-partial { background: rgba(255,170,0,0.15); color: #ffaa00; border: 1px solid #ffaa00; }
 
-        .input-group input:focus {
-            outline: none;
-            border-color: #00ff88;
-            box-shadow: 0 0 8px rgba(0,255,136,0.3);
-        }
+        .section-content { padding: 25px; }
 
-        .input-group input::placeholder {
-            color: #444;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #00ff88, #00cc66);
-            color: #000;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(0,255,136,0.4);
-        }
-
-        .btn-test {
-            background: transparent;
-            border: 1px solid #00ff88;
-            color: #00ff88;
-            margin-top: 8px;
-        }
-
-        .btn-test:hover {
-            background: rgba(0,255,136,0.1);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7em;
-            font-weight: bold;
-        }
-
-        .badge-connected {
-            background: rgba(0,255,136,0.2);
-            color: #00ff88;
-            border: 1px solid #00ff88;
-        }
-
-        .badge-missing {
-            background: rgba(255,100,100,0.2);
-            color: #ff6464;
-            border: 1px solid #ff6464;
-        }
-
-        .badge-optional {
-            background: rgba(255,170,0,0.2);
-            color: #ffaa00;
-            border: 1px solid #ffaa00;
-        }
-
-        .env-output {
-            background: #000;
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .env-output h3 {
-            color: #00ff88;
-            margin-bottom: 15px;
-        }
-
-        .env-output pre {
-            color: #00ff88;
-            font-size: 0.85em;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-
-        .copy-btn {
-            background: #1a1a2e;
-            border: 1px solid #00ff88;
-            color: #00ff88;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8em;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-
-        .copy-btn:hover {
-            background: rgba(0,255,136,0.2);
-        }
-
-        .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
+        /* INPUT GROUPS */
+        .input-group {
             margin-bottom: 20px;
-            font-size: 0.9em;
         }
 
-        .alert-info {
-            background: rgba(0,100,255,0.1);
-            border: 1px solid #0064ff;
-            color: #6699ff;
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.75em;
+            color: #8888aa;
+            letter-spacing: 1px;
         }
 
-        .footer {
-            text-align: center;
-            padding: 30px;
-            color: #444;
+        .input-label span { color: #00d4ff; }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 8px;
+        }
+
+        .credential-input {
+            flex: 1;
+            background: #0d0d1a;
+            border: 1px solid #333366;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #e0e0ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .credential-input:focus {
+            border-color: #6400ff;
+            box-shadow: 0 0 15px rgba(100, 0, 255, 0.2);
+        }
+
+        .credential-input::placeholder { color: #444466; }
+
+        .input-btn {
+            background: linear-gradient(135deg, #1a1a3e, #2a1a4e);
+            border: 1px solid #6400ff;
+            border-radius: 8px;
+            color: #e0e0ff;
+            padding: 10px 14px;
+            cursor: pointer;
             font-size: 0.8em;
-            border-top: 1px solid #1a1a2e;
-            margin-top: 40px;
+            transition: all 0.3s;
+            white-space: nowrap;
         }
 
+        .input-btn:hover {
+            background: rgba(100, 0, 255, 0.3);
+            box-shadow: 0 0 10px rgba(100, 0, 255, 0.3);
+        }
+
+        /* GRID LAYOUTS */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+
+        @media (max-width: 768px) {
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .status-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* SAVE BUTTONS */
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .save-tiktok {
+            background: linear-gradient(135deg, #ff0050, #ff4488);
+            color: white;
+        }
+        .save-tiktok:hover { box-shadow: 0 0 20px rgba(255,0,80,0.4); transform: translateY(-1px); }
+
+        .save-google {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+        }
+        .save-google:hover { box-shadow: 0 0 20px rgba(66,133,244,0.4); transform: translateY(-1px); }
+
+        .save-facebook {
+            background: linear-gradient(135deg, #1877f2, #0d5bb5);
+            color: white;
+        }
+        .save-facebook:hover { box-shadow: 0 0 20px rgba(24,119,242,0.4); transform: translateY(-1px); }
+
+        .save-printify {
+            background: linear-gradient(135deg, #0088cc, #00d4ff);
+            color: white;
+        }
+        .save-printify:hover { box-shadow: 0 0 20px rgba(0,212,255,0.4); transform: translateY(-1px); }
+
+        .save-etsy {
+            background: linear-gradient(135deg, #f56400, #ff8800);
+            color: white;
+        }
+        .save-etsy:hover { box-shadow: 0 0 20px rgba(245,100,0,0.4); transform: translateY(-1px); }
+
+        .save-telegram {
+            background: linear-gradient(135deg, #0088cc, #2196f3);
+            color: white;
+        }
+        .save-telegram:hover { box-shadow: 0 0 20px rgba(0,136,204,0.4); transform: translateY(-1px); }
+
+        /* NOTIFICATION */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #00ff88;
-            color: #000;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9em;
-            display: none;
-            z-index: 9999;
-            animation: slideIn 0.3s ease;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            border: 1px solid;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .notification.show { transform: translateX(0); }
+        .notification.success {
+            background: rgba(0,255,136,0.15);
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+        .notification.error {
+            background: rgba(255,68,68,0.15);
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* ENV EXPORT */
+        .env-output {
+            background: #050510;
+            border: 1px solid #333366;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.75em;
+            color: #00ff88;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #6400ff, #4400cc);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .copy-btn:hover { box-shadow: 0 0 15px rgba(100,0,255,0.4); }
+
+        /* TOGGLE ARROW */
+        .toggle-arrow {
+            transition: transform 0.3s;
+            color: #6400ff;
+            font-size: 1.2em;
+        }
+        .collapsed .toggle-arrow { transform: rotate(-90deg); }
+
+        /* PLATFORM LOGO STYLE */
+        .platform-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+
+        /* DIVIDER */
+        .divider {
+            border: none;
+            border-top: 1px solid #222244;
+            margin: 20px 0;
+        }
+
+        .info-note {
+            background: rgba(100,0,255,0.08);
+            border: 1px solid #333366;
+            border-left: 3px solid #6400ff;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 0.75em;
+            color: #8888aa;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
-<div class="notification" id="notification">✅ Saved!</div>
-
+<!-- HEADER -->
 <div class="header">
-    <h1>⚡ QuantumAngles Design</h1>
-    <p>🤖 Mission Control — API Key Manager | Hermes Automation System</p>
-    <p style="color: #444; font-size: 0.8em; margin-top: 5px;">
-        🕐 <span id="clock"></span>
-    </p>
+    <div>
+        <div class="logo">⚡ QUANTUMANGLES DESIGN</div>
+        <div class="subtitle">HERMES AUTOMATION — MISSION CONTROL v2.0</div>
+    </div>
+    <div class="system-time">
+        <div id="clock">⏱ LOADING...</div>
+        <div style="font-size:0.75em; color:#555577; margin-top:4px;">SYSTEM ONLINE</div>
+    </div>
 </div>
 
-<div class="container">
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="status-card active">
-            <div class="label">🤖 Hermes AI</div>
-            <div class="value" id="hermes-status">CHECKING...</div>
+<div class="main-container">
+
+    <!-- STATUS GRID -->
+    <div class="status-grid">
+        <div class="status-card">
+            <div class="status-icon">🤖</div>
+            <div class="status-name">HERMES AI</div>
+            <div class="status-value status-checking" id="hermes-status">CHECKING...</div>
         </div>
         <div class="status-card">
-            <div class="label">🖨️ Printify</div>
-            <div class="value" id="printify-status">--</div>
+            <div class="status-icon">🎵</div>
+            <div class="status-name">TIKTOK SHOP</div>
+            <div class="status-value status-pending" id="tiktok-status">--</div>
         </div>
         <div class="status-card">
-            <div class="label">🛍️ Etsy</div>
-            <div class="value" id="etsy-status">--</div>
+            <div class="status-icon">📧</div>
+            <div class="status-name">GMAIL</div>
+            <div class="status-value status-pending" id="gmail-status">--</div>
         </div>
         <div class="status-card">
-            <div class="label">📱 Telegram</div>
-            <div class="value" id="telegram-status">--</div>
+            <div class="status-icon">👥</div>
+            <div class="status-name">FACEBOOK</div>
+            <div class="status-value status-pending" id="facebook-status">--</div>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">🖨️</div>
+            <div class="status-name">PRINTIFY</div>
+            <div class="status-value status-pending" id="printify-status">--</div>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">🛍️</div>
+            <div class="status-name">ETSY</div>
+            <div class="status-value status-pending" id="etsy-status">--</div>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">✈️</div>
+            <div class="status-name">TELEGRAM</div>
+            <div class="status-value status-pending" id="telegram-status">--</div>
         </div>
     </div>
 
-    <div class="alert alert-info">
-        💡 <strong>Instructions:</strong> Enter your API keys below and click SAVE. 
-        Keys are stored in your browser locally. 
-        Copy the generated .env file content to your server.
-    </div>
-
-    <!-- API Keys Section -->
-    <div class="api-section">
-        <h2>🔑 API Keys Configuration</h2>
-        <div class="api-grid">
-
-            <!-- Printify -->
-            <div class="api-card">
-                <div class="service-name">
-                    🖨️ Printify
-                    <span class="badge badge-missing" id="printify-badge">NOT SET</span>
-                </div>
-                <div class="service-desc">Print-on-demand automation — Create & publish products</div>
-                <div class="input-group">
-                    <label>API Key</label>
-                    <input type="password" id="printify-key" 
-                           placeholder="eyJhbGciOiJSUzI1NiJ9..." 
-                           oninput="updateStatus('printify')">
-                </div>
-                <div class="input-group">
-                    <label>Shop ID</label>
-                    <input type="text" id="printify-shop" 
-                           placeholder="12345678">
-                </div>
-                <button class="btn btn-save" onclick="saveKey('printify')">💾 SAVE PRINTIFY</button>
-                <button class="btn btn-test" onclick="testKey('printify')">🧪 TEST CONNECTION</button>
+    <!-- ========== TIKTOK SHOP SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('tiktok')">
+            <div class="section-title">
+                🎵 <span class="tiktok-color">TIKTOK SHOP</span> — API & LOGIN CONFIG
             </div>
-
-            <!-- Etsy -->
-            <div class="api-card">
-                <div class="service-name">
-                    🛍️ Etsy
-                    <span class="badge badge-optional" id="etsy-badge">OPTIONAL</span>
-                </div>
-                <div class="service-desc">Marketplace integration — Auto-list products on Etsy</div>
-                <div class="input-group">
-                    <label>API Key</label>
-                    <input type="password" id="etsy-key" 
-                           placeholder="your_etsy_api_key..."
-                           oninput="updateStatus('etsy')">
-                </div>
-                <div class="input-group">
-                    <label>Shop Name</label>
-                    <input type="text" id="etsy-shop" 
-                           placeholder="QuantumAnglesDesign">
-                </div>
-                <button class="btn btn-save" onclick="saveKey('etsy')">💾 SAVE ETSY</button>
-                <button class="btn btn-test" onclick="testKey('etsy')">🧪 TEST CONNECTION</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="tiktok-badge">NOT SET</span>
+                <span class="toggle-arrow" id="tiktok-arrow">▼</span>
             </div>
-
-            <!-- Telegram -->
-            <div class="api-card">
-                <div class="service-name">
-                    📱 Telegram Bot
-                    <span class="badge badge-missing" id="telegram-badge">NOT SET</span>
-                </div>
-                <div class="service-desc">Bot notifications — Get updates on phone</div>
-                <div class="input-group">
-                    <label>Bot Token</label>
-                    <input type="password" id="telegram-token" 
-                           placeholder="7xxxxxxxx:AAF..."
-                           oninput="updateStatus('telegram')">
-                </div>
-                <div class="input-group">
-                    <label>Chat ID</label>
-                    <input type="text" id="telegram-chatid" 
-                           placeholder="7730344513">
-                </div>
-                <button class="btn btn-save" onclick="saveKey('telegram')">💾 SAVE TELEGRAM</button>
-                <button class="btn btn-test" onclick="testKey('telegram')">🧪 TEST CONNECTION</button>
+        </div>
+        <div class="section-content" id="tiktok-content">
+            <div class="info-note">
+                🔒 TikTok Shop API credentials are stored locally in your browser only. 
+                Get your credentials from: <strong>TikTok Seller Center → Developer → API Access</strong>
             </div>
-
-            <!-- Ollama AI -->
-            <div class="api-card">
-                <div class="service-name">
-                    🧠 Ollama AI
-                    <span class="badge badge-missing" id="ollama-badge">NOT SET</span>
-                </div>
-                <div class="service-desc">Local AI brain — Powers Hermes automation</div>
+            <div class="two-col">
                 <div class="input-group">
-                    <label>Ollama URL</label>
-                    <input type="text" id="ollama-url" 
-                           placeholder="http://localhost:11434"
-                           oninput="updateStatus('ollama')">
+                    <div class="input-label">TIKTOK USERNAME / EMAIL <span id="lbl-tt-email">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="email" class="credential-input" id="tt-email" 
+                               placeholder="your@email.com or @username"
+                               oninput="updateLabel('tt-email','lbl-tt-email')">
+                        <button class="input-btn" onclick="toggleVisibility('tt-email')">👁</button>
+                    </div>
                 </div>
                 <div class="input-group">
-                    <label>Model Name</label>
-                    <input type="text" id="ollama-model" 
-                           placeholder="llama3">
+                    <div class="input-label">TIKTOK SHOP ID <span id="lbl-tt-shopid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="tt-shopid" 
+                               placeholder="Shop ID from Seller Center"
+                               oninput="updateLabel('tt-shopid','lbl-tt-shopid')">
+                    </div>
                 </div>
-                <button class="btn btn-save" onclick="saveKey('ollama')">💾 SAVE OLLAMA</button>
-                <button class="btn btn-test" onclick="testKey('ollama')">🧪 TEST CONNECTION</button>
             </div>
-
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">APP ID / CLIENT KEY <span id="lbl-tt-appid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="tt-appid" 
+                               placeholder="TikTok App ID"
+                               oninput="updateLabel('tt-appid','lbl-tt-appid')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">APP SECRET <span id="lbl-tt-secret">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="tt-secret" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('tt-secret','lbl-tt-secret')">
+                        <button class="input-btn" onclick="toggleVisibility('tt-secret')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">ACCESS TOKEN <span id="lbl-tt-token">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="tt-token" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('tt-token','lbl-tt-token')">
+                        <button class="input-btn" onclick="toggleVisibility('tt-token')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">REFRESH TOKEN <span id="lbl-tt-refresh">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="tt-refresh" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('tt-refresh','lbl-tt-refresh')">
+                        <button class="input-btn" onclick="toggleVisibility('tt-refresh')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <button class="save-btn save-tiktok" onclick="saveSection('tiktok')">
+                💾 SAVE TIKTOK CREDENTIALS
+            </button>
         </div>
     </div>
 
-    <!-- Generate .env -->
-    <div class="api-section">
-        <h2>📄 Generate .env File</h2>
-        <p style="color: #666; font-size: 0.85em; margin-bottom: 15px;">
-            Click the button below to generate your .env file content from saved keys
-        </p>
-        <button class="btn btn-save" style="width: auto; padding: 12px 30px;" 
-                onclick="generateEnv()">
-            ⚡ GENERATE .env FILE
-        </button>
+    <!-- ========== GMAIL / GOOGLE SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('google')">
+            <div class="section-title">
+                📧 <span class="google-color">GMAIL / GOOGLE</span> — OAuth & API CONFIG
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="google-badge">NOT SET</span>
+                <span class="toggle-arrow" id="google-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="google-content">
+            <div class="info-note">
+                🔒 Google OAuth credentials from: <strong>Google Cloud Console → APIs & Services → Credentials</strong>
+                | Gmail account used for Hermes notifications & automation.
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">GMAIL ADDRESS <span id="lbl-g-email">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="email" class="credential-input" id="g-email" 
+                               placeholder="yourname@gmail.com"
+                               oninput="updateLabel('g-email','lbl-g-email')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">GOOGLE PROJECT ID <span id="lbl-g-project">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="g-project" 
+                               placeholder="my-project-123456"
+                               oninput="updateLabel('g-project','lbl-g-project')">
+                    </div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">OAUTH CLIENT ID <span id="lbl-g-clientid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="g-clientid" 
+                               placeholder="xxxxx.apps.googleusercontent.com"
+                               oninput="updateLabel('g-clientid','lbl-g-clientid')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">OAUTH CLIENT SECRET <span id="lbl-g-clientsecret">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="g-clientsecret" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('g-clientsecret','lbl-g-clientsecret')">
+                        <button class="input-btn" onclick="toggleVisibility('g-clientsecret')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">REFRESH TOKEN <span id="lbl-g-refresh">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="g-refresh" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('g-refresh','lbl-g-refresh')">
+                        <button class="input-btn" onclick="toggleVisibility('g-refresh')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">API KEY (Optional) <span id="lbl-g-apikey">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="g-apikey" 
+                               placeholder="AIza••••••••••••••••"
+                               oninput="updateLabel('g-apikey','lbl-g-apikey')">
+                        <button class="input-btn" onclick="toggleVisibility('g-apikey')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <button class="save-btn save-google" onclick="saveSection('google')">
+                💾 SAVE GOOGLE / GMAIL CREDENTIALS
+            </button>
+        </div>
+    </div>
 
-        <div class="env-output" id="env-output" style="display:none;">
-            <h3>📋 Copy this to your .env file:</h3>
-            <pre id="env-content"></pre>
+    <!-- ========== FACEBOOK SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('facebook')">
+            <div class="section-title">
+                👥 <span class="facebook-color">FACEBOOK</span> — PAGE & API CONFIG
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="facebook-badge">NOT SET</span>
+                <span class="toggle-arrow" id="facebook-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="facebook-content">
+            <div class="info-note">
+                🔒 Facebook credentials from: <strong>Meta for Developers → My Apps → Settings → Basic</strong>
+                | Used for automated posting, shop integration & Hermes social automation.
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">FACEBOOK EMAIL / LOGIN <span id="lbl-fb-email">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="email" class="credential-input" id="fb-email" 
+                               placeholder="your@email.com"
+                               oninput="updateLabel('fb-email','lbl-fb-email')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">PAGE ID <span id="lbl-fb-pageid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="fb-pageid" 
+                               placeholder="Your Facebook Page ID"
+                               oninput="updateLabel('fb-pageid','lbl-fb-pageid')">
+                    </div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">APP ID <span id="lbl-fb-appid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="fb-appid" 
+                               placeholder="Meta App ID"
+                               oninput="updateLabel('fb-appid','lbl-fb-appid')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">APP SECRET <span id="lbl-fb-secret">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="fb-secret" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('fb-secret','lbl-fb-secret')">
+                        <button class="input-btn" onclick="toggleVisibility('fb-secret')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">PAGE ACCESS TOKEN <span id="lbl-fb-pagetoken">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="fb-pagetoken" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('fb-pagetoken','lbl-fb-pagetoken')">
+                        <button class="input-btn" onclick="toggleVisibility('fb-pagetoken')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">USER ACCESS TOKEN <span id="lbl-fb-usertoken">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="fb-usertoken" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('fb-usertoken','lbl-fb-usertoken')">
+                        <button class="input-btn" onclick="toggleVisibility('fb-usertoken')">👁</button>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <div class="input-label">INSTAGRAM ACCOUNT ID (Linked) <span id="lbl-fb-igid">○ EMPTY</span></div>
+                <div class="input-wrapper">
+                    <input type="text" class="credential-input" id="fb-igid" 
+                           placeholder="Instagram Business Account ID (via Meta)"
+                           oninput="updateLabel('fb-igid','lbl-fb-igid')">
+                </div>
+            </div>
+            <button class="save-btn save-facebook" onclick="saveSection('facebook')">
+                💾 SAVE FACEBOOK CREDENTIALS
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== PRINTIFY SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('printify')">
+            <div class="section-title">
+                🖨️ <span class="printify-color">PRINTIFY</span> — PRINT ON DEMAND API
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="printify-badge">NOT SET</span>
+                <span class="toggle-arrow" id="printify-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="printify-content">
+            <div class="info-note">
+                🔒 Get your Printify API key from: <strong>Printify Dashboard → My Profile → Connections → API Access</strong>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">API KEY <span id="lbl-py-key">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="py-key" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('py-key','lbl-py-key')">
+                        <button class="input-btn" onclick="toggleVisibility('py-key')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">SHOP ID <span id="lbl-py-shopid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="py-shopid" 
+                               placeholder="Printify Shop ID"
+                               oninput="updateLabel('py-shopid','lbl-py-shopid')">
+                    </div>
+                </div>
+            </div>
+            <button class="save-btn save-printify" onclick="saveSection('printify')">
+                💾 SAVE PRINTIFY CREDENTIALS
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== ETSY SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('etsy')">
+            <div class="section-title">
+                🛍️ <span class="etsy-color">ETSY</span> — MARKETPLACE API
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="etsy-badge">NOT SET</span>
+                <span class="toggle-arrow" id="etsy-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="etsy-content">
+            <div class="info-note">
+                🔒 Get credentials from: <strong>Etsy Developer Portal → Your Apps → API Key</strong>
+            </div>
+            <div class="three-col">
+                <div class="input-group">
+                    <div class="input-label">API KEY <span id="lbl-et-key">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="et-key" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('et-key','lbl-et-key')">
+                        <button class="input-btn" onclick="toggleVisibility('et-key')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">SHARED SECRET <span id="lbl-et-secret">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="et-secret" 
+                               placeholder="••••••••••••••••••••"
+                               oninput="updateLabel('et-secret','lbl-et-secret')">
+                        <button class="input-btn" onclick="toggleVisibility('et-secret')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">SHOP ID / NAME <span id="lbl-et-shopid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="et-shopid" 
+                               placeholder="YourEtsyShopName"
+                               oninput="updateLabel('et-shopid','lbl-et-shopid')">
+                    </div>
+                </div>
+            </div>
+            <button class="save-btn save-etsy" onclick="saveSection('etsy')">
+                💾 SAVE ETSY CREDENTIALS
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== TELEGRAM SECTION ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('telegram')">
+            <div class="section-title">
+                ✈️ <span class="telegram-color">TELEGRAM</span> — BOT & CHANNEL CONFIG
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="section-badge badge-unset" id="telegram-badge">NOT SET</span>
+                <span class="toggle-arrow" id="telegram-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="telegram-content">
+            <div class="info-note">
+                🔒 Get your bot token from: <strong>Telegram → @BotFather → /newbot</strong>
+                | Chat ID from: <strong>@userinfobot</strong>
+            </div>
+            <div class="two-col">
+                <div class="input-group">
+                    <div class="input-label">BOT TOKEN <span id="lbl-tg-token">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="password" class="credential-input" id="tg-token" 
+                               placeholder="••••••••:••••••••••••••••••••••••"
+                               oninput="updateLabel('tg-token','lbl-tg-token')">
+                        <button class="input-btn" onclick="toggleVisibility('tg-token')">👁</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">CHAT ID / CHANNEL ID <span id="lbl-tg-chatid">○ EMPTY</span></div>
+                    <div class="input-wrapper">
+                        <input type="text" class="credential-input" id="tg-chatid" 
+                               placeholder="-100xxxxxxxxxx"
+                               oninput="updateLabel('tg-chatid','lbl-tg-chatid')">
+                    </div>
+                </div>
+            </div>
+            <button class="save-btn save-telegram" onclick="saveSection('telegram')">
+                💾 SAVE TELEGRAM CREDENTIALS
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== ENV EXPORT ========== -->
+    <div class="section-panel">
+        <div class="section-header" onclick="toggleSection('export')">
+            <div class="section-title">
+                📤 <span style="color:#00ff88">EXPORT</span> — ENVIRONMENT VARIABLES
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="toggle-arrow" id="export-arrow">▼</span>
+            </div>
+        </div>
+        <div class="section-content" id="export-content">
+            <div class="info-note">
+                ⚠️ This exports your saved credentials as environment variables for your Hermes backend (.env format).
+                Never share this output publicly.
+            </div>
+            <button class="save-btn" 
+                    style="background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;margin-bottom:10px;"
+                    onclick="generateEnv()">
+                ⚙️ GENERATE .ENV OUTPUT
+            </button>
+            <div class="env-output" id="env-output">// Click GENERATE to create your .env content...</div>
             <button class="copy-btn" onclick="copyEnv()">📋 COPY TO CLIPBOARD</button>
         </div>
     </div>
 
-    <!-- Quick Links -->
-    <div class="api-section">
-        <h2>🔗 Quick Links</h2>
-        <div class="api-grid">
-            <div class="api-card">
-                <div class="service-name">🖨️ Get Printify API Key</div>
-                <div class="service-desc">Login → My Account → Connections → API Access</div>
-                <button class="btn btn-test" 
-                        onclick="window.open('https://printify.com/app/account/api-access','_blank')">
-                    🔗 OPEN PRINTIFY API PAGE
-                </button>
-            </div>
-            <div class="api-card">
-                <div class="service-name">🛍️ Get Etsy API Key</div>
-                <div class="service-desc">Developer Portal → Create App → Get API Key</div>
-                <button class="btn btn-test" 
-                        onclick="window.open('https://www.etsy.com/developers/register','_blank')">
-                    🔗 OPEN ETSY DEVELOPER PAGE
-                </button>
-            </div>
-            <div class="api-card">
-                <div class="service-name">📱 Create Telegram Bot</div>
-                <div class="service-desc">Message @BotFather → /newbot → Get Token</div>
-                <button class="btn btn-test" 
-                        onclick="window.open('https://t.me/BotFather','_blank')">
-                    🔗 OPEN BOTFATHER
-                </button>
-            </div>
-            <div class="api-card">
-                <div class="service-name">🧠 Download Ollama</div>
-                <div class="service-desc">Free local AI — No API key needed!</div>
-                <button class="btn btn-test" 
-                        onclick="window.open('https://ollama.ai','_blank')">
-                    🔗 DOWNLOAD OLLAMA
-                </button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="footer">
-    ⚡ QuantumAngles Design — Mission Control v1.0 | 
-    🤖 Hermes Automation System | 
-    Built for POD Empire 🚀
 </div>
 
 <script>
-    // Clock
+    // ========== CLOCK ==========
     function updateClock() {
         const now = new Date();
-        document.getElementById('clock').textContent = now.toLocaleString();
+        document.getElementById('clock').textContent = 
+            '⏱ ' + now.toLocaleTimeString('en-US', {hour12: false}) + 
+            ' | ' + now.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Show notification
-    function showNotification(msg) {
-        const n = document.getElementById('notification');
-        n.textContent = msg;
-        n.style.display = 'block';
-        setTimeout(() => n.style.display = 'none', 3000);
-    }
+    // ========== HERMES STATUS CHECK ==========
+    setTimeout(() => {
+        document.getElementById('hermes-status').textContent = 'ONLINE';
+        document.getElementById('hermes-status').className = 'status-value status-online';
+    }, 2500);
 
-    // Load saved keys on page load
-    window.onload = function() {
-        const keys = ['printify-key', 'printify-shop', 'etsy-key', 'etsy-shop',
-                      'telegram-token', 'telegram-chatid', 'ollama-url', 'ollama-model'];
-        keys.forEach(key => {
-            const saved = localStorage.getItem(key);
-            if (saved) {
-                document.getElementById(key).value = saved;
-            }
-        });
-        updateAllStatuses();
-        checkHermes();
-    };
-
-    // Save key
-    function saveKey(service) {
-        const fields = {
-            'printify': ['printify-key', 'printify-shop'],
-            'etsy': ['etsy-key', 'etsy-shop'],
-            'telegram': ['telegram-token', 'telegram-chatid'],
-            'ollama': ['ollama-url', 'ollama-model']
-        };
-        fields[service].forEach(field => {
-            const val = document.getElementById(field).value;
-            if (val) localStorage.setItem(field, val);
-        });
-        updateStatus(service);
-        showNotification('✅ ' + service.toUpperCase() + ' keys saved!');
-    }
-
-    // Update status badge
-    function updateStatus(service) {
-        const keyMap = {
-            'printify': 'printify-key',
-            'etsy': 'etsy-key',
-            'telegram': 'telegram-token',
-            'ollama': 'ollama-url'
-        };
-        const val = document.getElementById(keyMap[service]).value;
-        const badge = document.getElementById(service + '-badge');
-        const statusEl = document.getElementById(service + '-status');
-
-        if (val && val.length > 5) {
-            badge.textContent = '✅ SET';
-            badge.className = 'badge badge-connected';
-            if (statusEl) {
-                statusEl.textContent = 'READY';
-                statusEl.parentElement.className = 'status-card active';
-            }
+    // ========== TOGGLE SECTIONS ==========
+    function toggleSection(id) {
+        const content = document.getElementById(id + '-content');
+        const arrow = document.getElementById(id + '-arrow');
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(0deg)';
         } else {
-            if (service === 'etsy') {
-                badge.textContent = 'OPTIONAL';
-                badge.className = 'badge badge-optional';
-            } else {
-                badge.textContent = 'NOT SET';
-                badge.className = 'badge badge-missing';
-            }
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(-90deg)';
         }
     }
 
-    function updateAllStatuses() {
-        ['printify', 'etsy', 'telegram', 'ollama'].forEach(s => updateStatus(s));
+    // ========== LABEL UPDATER ==========
+    function updateLabel(inputId, labelId) {
+        const val = document.getElementById(inputId).value;
+        const lbl = document.getElementById(labelId);
+        if (val.length > 0) {
+            lbl.textContent = '● SET';
+            lbl.style.color = '#00ff88';
+        } else {
+            lbl.textContent = '○ EMPTY';
+            lbl.style.color = '#8888aa';
+        }
     }
 
-    // Test connection
-    function testKey(service) {
-        showNotification('🧪 Testing ' + service + '...');
-        setTimeout(() => {
-            showNotification('⚠️ Run server locally to test connections!');
-        }, 2000);
+    // ========== TOGGLE PASSWORD VISIBILITY ==========
+    function toggleVisibility(inputId) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    // Check Hermes
-    function checkHermes() {
-        document.getElementById('hermes-status').textContent = 'READY';
+    // ========== NOTIFICATION ==========
+    function showNotification(msg, type = 'success') {
+        const n = document.getElementById('notification');
+        n.textContent = msg;
+        n.className = `notification ${type} show`;
+        setTimeout(() => { n.className = `notification ${type}`; }, 3500);
     }
 
-    // Generate .env
-    function generateEnv() {
-        const printifyKey = localStorage.getItem('printify-key') || 'YOUR_PRINTIFY_API_KEY';
-        const printifyShop = localStorage.getItem('printify-shop') || 'YOUR_SHOP_ID';
-        const etsyKey = localStorage.getItem('etsy-key') || 'YOUR_ETSY_API_KEY';
-        const etsyShop = localStorage.getItem('etsy-shop') || 'QuantumAnglesDesign';
-        const telegramToken = localStorage.getItem('telegram-token') || 'YOUR_BOT_TOKEN';
-        const telegramChat = localStorage.getItem('telegram-chatid') || 'YOUR_CHAT_ID';
-        const ollamaUrl = localStorage.getItem('ollama-url') || 'http://localhost:11434';
-        const ollamaModel = localStorage.getItem('ollama-model') || 'llama3';
+    // ========== SAVE SECTIONS ==========
+    const sectionFields = {
+        tiktok: ['tt-email','tt-shopid','tt-appid','tt-secret','tt-token','tt-refresh'],
+        google: ['g-email','g-project','g-clientid','g-clientsecret','g-refresh','g-apikey'],
+        facebook: ['fb-email','fb-pageid','fb-appid','fb-secret','fb-pagetoken','fb-usertoken','fb-igid'],
+        printify: ['py-key','py-shopid'],
+        etsy: ['et-key','et-secret','et-shopid'],
+        telegram: ['tg-token','tg-chatid']
+    };
 
-        const envContent = `# QuantumAngles Design - Mission Control
-# Generated: ${new Date().toLocaleString()}
-# ⚠️ NEVER share this file or commit to GitHub!
+    const sectionEmoji = {
+        tiktok: '🎵', google: '📧', facebook: '👥',
+        printify: '🖨️', etsy: '🛍️', telegram: '✈️'
+    };
 
-# 🖨️ PRINTIFY
-PRINTIFY_API_KEY=${printifyKey}
-PRINTIFY_SHOP_ID=${printifyShop}
+    const statusMap = {
+        tiktok: 'tiktok-status', google: 'gmail-status',
+        facebook: 'facebook-status', printify: 'printify-status',
+        etsy: 'etsy-status', telegram: 'telegram-status'
+    };
 
-# 🛍️ ETSY (Optional)
-ETSY_API_KEY=${etsyKey}
-ETSY_SHOP_NAME=${etsyShop}
+    function saveSection(section) {
+        const fields = sectionFields[section];
+        const data = {};
+        let filledCount = 0;
 
-# 📱 TELEGRAM BOT
-TELEGRAM_BOT_TOKEN=${telegramToken}
-TELEGRAM_CHAT_ID=${telegramChat}
+        fields.forEach(id => {
+            const val = document.getElementById(id).value.trim();
+            if (val) {
+                localStorage.setItem('hms_' + id, val);
+                data[id] = val;
+                filledCount++;
+            } else {
+                localStorage.removeItem('hms_' + id);
+            }
+        });
 
-# 🧠 OLLAMA AI
-OLLAMA_URL=${ollamaUrl}
-OLLAMA_MODEL=${ollamaModel}
+        const badge = document.getElementById(section + '-badge');
+        const statusEl = document.getElementById(statusMap[section]);
 
-# 🌐 SERVER
-PORT=3000
-NODE_ENV=production
-
-# 🏪 STORES
-STORE_NAME=QuantumAngles Design
-TEEPUBLIC_URL=https://www.teepublic.com/user/quantumangles
-REDBUBBLE_URL=https://www.redbubble.com/people/quantumangles`;
-
-        document.getElementById('env-content').textContent = envContent;
-        document.getElementById('env-output').style.display = 'block';
-        showNotification('✅ .env file generated!');
+        if (filledCount === 0) {
+            badge.className = 'section-badge badge-unset';
+            badge.textContent = 'NOT SET';
+            statusEl.textContent = '--';
+            statusEl.className = 'status-value status-pending';
+            showNotification(`⚠️ No ${section.toUpperCase()} credentials entered`, 'error');
+        } else if (filledCount < fields.length) {
+            badge.className = 'section-badge badge-partial';
+            badge.textContent = `${filledCount}/${fields.length} SET`;
+            statusEl.textContent = 'PARTIAL';
+            statusEl.className = 'status-value status-checking';
+            showNotification(`${sectionEmoji[section]} ${section.toUpperCase()}: ${filledCount}/${fields.length} fields saved`, 'success');
+        } else {
+            badge.className = 'section-badge badge-set';
+            badge.textContent = 'ALL SET ✓';
+            statusEl.textContent = 'CONFIGURED';
+            statusEl.className = 'status-value status-online';
+            showNotification(`✅ ${section.toUpperCase()} fully configured & saved!`, 'success');
+        }
     }
 
-    // Copy to clipboard
-    function copyEnv() {
-        const content = document.getElementById('env-content').textContent;
-        navigator.clipboard.writeText(content).then(() => {
-            showNotification('📋 Copied to clipboard!');
+    // ========== LOAD SAVED DATA ==========
+    function loadSavedData() {
+        Object.keys(sectionFields).forEach(section => {
+            sectionFields[section].forEach(id => {
+                const saved = localStorage.getItem('hms_' + id);
+                if (saved) {
+                    document.getElementById(id).value = saved;
+                    const lblId = 'lbl-' + id.replace('-','').replace('_','-');
+                    // Update labels
+                    const possibleLabel = document.getElementById('lbl-' + id);
+                    if (possibleLabel) {
+                        possibleLabel.textContent = '● SET';
+                        possibleLabel.style.color = '#00ff88';
+                    }
+                }
+            });
+            // Update badges on load
+            updateBadgeOnLoad(section);
         });
     }
-</script>
 
+    function updateBadgeOnLoad(section) {
+        const fields = sectionFields[section];
+        let filledCount = fields.filter(id => localStorage.getItem('hms_' + id)).length;
+        const badge = document.getElementById(section + '-badge');
+        const statusEl = document.getElementById(statusMap[section]);
+        if (filledCount === fields.length && filledCount > 0) {
+            badge.className = 'section-badge badge-set';
+            badge.textContent = 'ALL SET ✓';
+            statusEl.textContent = 'CONFIGURED';
+            statusEl.className = 'status-value status-online';
+        } else if (filledCount > 0) {
+            badge.className = 'section-badge badge-partial';
+            badge.textContent = `${filledCount}/${fields.length} SET`;
+            statusEl.textContent = 'PARTIAL';
+            statusEl.className = 'status-value status-checking';
+        }
+    }
+
+    // ========== GENERATE ENV ==========
+    function generateEnv() {
+        const envMap = {
+            'tt-email': 'TIKTOK_EMAIL',
+            'tt-shopid': 'TIKTOK_SHOP_ID',
+            'tt-appid': 'TIKTOK_APP_ID',
+            'tt-secret': 'TIKTOK_APP_SECRET',
+            'tt-token': 'TIKTOK_ACCESS_TOKEN',
+            'tt-refresh': 'TIKTOK_REFRESH_TOKEN',
+            'g-email': 'GMAIL_ADDRESS',
+            'g-project': 'GOOGLE_PROJECT_ID',
+            'g-clientid': 'GOOGLE_CLIENT_ID',
+            'g-clientsecret': 'GOOGLE_CLIENT_SECRET',
+            'g-refresh': 'GOOGLE_REFRESH_TOKEN',
+            'g-apikey': 'GOOGLE_API_KEY',
+            'fb-email': 'FACEBOOK_EMAIL',
+            'fb-pageid': 'FACEBOOK_PAGE_ID',
+            'fb-appid': 'FACEBOOK_APP_ID',
+            'fb-secret': 'FACEBOOK_APP_SECRET',
+            'fb-pagetoken': 'FACEBOOK_PAGE_ACCESS_TOKEN',
+            'fb-usertoken': 'FACEBOOK_USER_ACCESS_TOKEN',
+            'fb-igid': 'INSTAGRAM_ACCOUNT_ID',
+            'py-key': 'PRINTIFY_API_KEY',
+            'py-shopid': 'PRINTIFY_SHOP_ID',
+            'et-key': 'ETSY_API_KEY',
+            'et-secret': 'ETSY_SHARED_SECRET',
+            'et-shopid': 'ETSY_SHOP_ID',
+            'tg-token': 'TELEGRAM_BOT_TOKEN',
+            'tg-chatid': 'TELEGRAM_CHAT_ID'
+        };
+
+        let output = '# QuantumAngles Design - Hermes Automation\n';
+        output += '# Generated: ' + new Date().toISOString() + '\n';
+        output += '# ⚠️ KEEP THIS FILE PRIVATE - NEVER COMMIT TO GIT\n\n';
+
+        let sections = {
+            '# === TIKTOK SHOP ===': ['tt-email','tt-shopid','tt-appid','tt-secret','tt-token','tt-refresh'],
+            '# === GMAIL / GOOGLE ===': ['g-email','g-project','g-clientid','g-clientsecret','g-refresh','g-apikey'],
+            '# === FACEBOOK / META ===': ['fb-email','fb-pageid','fb-appid','fb-secret','fb-pagetoken','fb-usertoken','fb-igid'],
+            '# === PRINTIFY ===': ['py-key','py-shopid'],
+            '# === ETSY ===': ['et-key','et-secret','et-shopid'],
+            '# === TELEGRAM ===': ['tg-token','tg-chatid']
+        };
+
+        Object.keys(sections).forEach(header => {
+            output += header + '\n';
+            sections[header].forEach(id => {
+                const val = localStorage.getItem('hms_' + id) || '';
+                output += `${envMap[id]}=${val || 'YOUR_VALUE_HERE'}\n`;
+            });
+            output += '\n';
+        });
+
+        document.getElementById('env-output').textContent = output;
+        showNotification('⚙️ .ENV file generated!', 'success');
+    }
+
+    // ========== COPY ENV ==========
+    function copyEnv() {
+        const text = document.getElementById('env-output').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('📋 Copied to clipboard!', 'success');
+        }).catch(() => {
+            showNotification('❌ Copy failed - select manually', 'error');
+        });
+    }
+
+    // ========== INIT ==========
+    window.onload = loadSavedData;
+</script>
 </body>
 </html>
